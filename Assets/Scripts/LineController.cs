@@ -2,17 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LineController : MonoBehaviour
 {
     [SerializeField] private Line _line;
     [SerializeField] private CircleMouse _mouse;
     [SerializeField] private float _deep = 10f;
-
-    private Vector3 _position = Vector3.zero;
+    
     private Line _currentLine;
     private List<Line> _lines;
     private Camera _camera;
+    private Color _nextColor;
 
     private void Awake()
     {
@@ -22,29 +23,39 @@ public class LineController : MonoBehaviour
 
     private void Update()
     {
-        if(_currentLine == null) return;
-        
         if (Input.GetMouseButtonDown(0))
         {
-            _lines.Add(_currentLine);
-            _currentLine = null;
+            CreateNewLine();
         }
 
         if (Input.GetMouseButton(0))
         {
-            var position = _camera.ScreenToWorldPoint(Input.mousePosition);
-            _position.x = position.x;
-            _position.y = position.y;
-            _position.z = _deep;
+            var mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, _deep);
+            var position =  _camera.ScreenToWorldPoint(mousePos);
             
-            _currentLine.AddPosition(_position);
+            _currentLine.AddPosition(position);
         }
     }
 
-    public void OnChangeColor(Color color)
+    private void CreateNewLine()
     {
-        _mouse.ChangeColor(color);
         _currentLine = Instantiate(_line);
-        _currentLine.ChangeColor(color);
+        _currentLine.ChangeColor(_nextColor);
+        _lines.Add(_currentLine);
+    }
+
+    public void ClearAllLines()
+    {
+        foreach (var line in _lines)
+        {
+            if(line != null)
+                Destroy(line.gameObject);
+        }
+    }
+
+    public void OnChangeColor(Image image)
+    {
+        _nextColor = image.color;
+        _mouse.ChangeColor(image.color);
     }
 }

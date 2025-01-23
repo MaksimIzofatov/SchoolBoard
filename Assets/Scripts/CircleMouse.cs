@@ -6,19 +6,18 @@ using UnityEngine.UI;
 public class CircleMouse : MonoBehaviour
 {
     private Camera _camera;
-    private RectTransform _transform;
     private Image _image;
     private void Awake()
     {
         _camera = Camera.main;
-        _transform = GetComponent<RectTransform>();
         _image = GetComponent<Image>();
     }
 
     private void Update()
     {
         var position = _camera.ScreenToWorldPoint(Input.mousePosition);
-        _transform.position = new Vector3(position.x, position.y);
+        position.z = 10;
+        transform.position = position;
     }
 
     public void ChangeColor(Color color)
